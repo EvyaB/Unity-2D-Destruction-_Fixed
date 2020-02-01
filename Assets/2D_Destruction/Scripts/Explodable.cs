@@ -119,13 +119,21 @@ public class Explodable : MonoBehaviour
     {
         fragments = new List<GameObject>();
 
+        Material mat = null;
+        if (meshSaved)
+        {
+            mat = SpriteExploder.createFragmentMaterial(gameObject);
+            Directory.CreateDirectory("Assets/FragmentMaterials");
+            AssetDatabase.CreateAsset(mat, "Assets/FragmentMaterials/" + transform.name + "_fragments" + ".mat");
+        }
+
         switch (shatterType)
         {
             case ShatterType.Triangle:
-                fragments = SpriteExploder.GenerateTriangularPieces(gameObject, extraPoints, subshatterSteps, null, meshSaved);
+                fragments = SpriteExploder.GenerateTriangularPieces(gameObject, extraPoints, subshatterSteps, mat, meshSaved);
                 break;
             case ShatterType.Voronoi:
-                fragments = SpriteExploder.GenerateVoronoiPieces(gameObject, extraPoints, subshatterSteps, null, meshSaved);
+                fragments = SpriteExploder.GenerateVoronoiPieces(gameObject, extraPoints, subshatterSteps, mat, meshSaved);
                 break;
             default:
                 Debug.Log("invalid choice");

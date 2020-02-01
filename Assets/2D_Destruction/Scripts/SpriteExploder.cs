@@ -576,7 +576,7 @@ public static class SpriteExploder
         }
         newSprite.GetComponent<MeshRenderer>().sharedMaterial = mat;
     }
-    private static Material createFragmentMaterial(GameObject source)
+    public static Material createFragmentMaterial(GameObject source)
     {
         SpriteRenderer sRend = source.GetComponent<SpriteRenderer>();
         if (sRend != null)
