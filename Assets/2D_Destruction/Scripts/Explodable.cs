@@ -152,13 +152,13 @@ public class Explodable : MonoBehaviour
                 /// prefab mesh save        
                 if (meshSaved)
                 {
-                    if (!string.IsNullOrEmpty("Assets/Mesh"))
+                    if (!string.IsNullOrEmpty("Assets/FragmentMesh"))
                     {
-                        Directory.CreateDirectory("Assets/Mesh");
+                        Directory.CreateDirectory("Assets/FragmentMesh");
                     }
 
                     var mesh = fragments[i].GetComponent<MeshFilter>().sharedMesh;
-                    AssetDatabase.CreateAsset(mesh, "Assets/Mesh/" + transform.name + "_" + i + ".asset");
+                    AssetDatabase.CreateAsset(mesh, "Assets/FragmentMesh/" + transform.name + "_" + i + ".asset");
                 }
             }
         }
