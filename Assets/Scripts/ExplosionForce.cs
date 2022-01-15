@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-
+// Can be used to push fragments or other RigidBodies that are in a certain radius around it. 
 public class ExplosionForce : MonoBehaviour {
 	public float force = 50;
 	public float radius = 5;

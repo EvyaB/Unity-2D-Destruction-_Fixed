@@ -67,7 +67,7 @@
     <Compile Include="Assets\Unity-delaunay\Delaunay\LR.cs" />
     <Compile Include="Assets\Unity-delaunay\Delaunay\Vertex.cs" />
     <Compile Include="Assets\Unity-delaunay\Delaunay\Voronoi.cs" />
-    <Compile Include="Assets\Demo\Demo Scripts\ExplosionForce.cs" />
+    <Compile Include="Assets\Scripts\ExplosionForce.cs" />
     <Compile Include="Assets\Unity-delaunay\Delaunay\DelaunayHelpers.cs" />
     <Compile Include="Assets\Unity-delaunay\Delaunay\Site.cs" />
     <Compile Include="Assets\Unity-delaunay\Delaunay\EdgeReorderer.cs" />
