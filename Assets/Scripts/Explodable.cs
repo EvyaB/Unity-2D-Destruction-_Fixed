@@ -51,12 +51,6 @@ public class Explodable : MonoBehaviour
                     mRend.sharedMaterial.SetTexture("_MainTex", sRend.sprite.texture);
                 }
                 frag.SetActive(true);
-
-                // if lifetime set - add DestroyObjectDelay component to destroy pieces with delay
-                if (fragmentLifetime > 0)
-                {
-                    frag.AddComponent<DestroyObjectDelay>().delay = fragmentLifetime;
-                }
             }
         }
         //if fragments exist destroy the original
@@ -166,6 +160,12 @@ public class Explodable : MonoBehaviour
 
                     var mesh = fragments[i].GetComponent<MeshFilter>().sharedMesh;
                     AssetDatabase.CreateAsset(mesh, "Assets/FragmentMesh/" + transform.name + "_" + i + ".asset");
+                }
+
+                // if lifetime set - add DestroyObjectDelay component to destroy pieces with delay
+                if (fragmentLifetime > 0)
+                {
+                    fragments[i].AddComponent<DestroyObjectDelay>().delay = fragmentLifetime;
                 }
             }
         }
