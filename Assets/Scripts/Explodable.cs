@@ -17,6 +17,7 @@ public class Explodable : MonoBehaviour
     public string sortingLayerName = "Default";
     public int orderInLayer = 0;
     public float fragmentLifetime = 0;
+    public float fragmentsGravityScale = 1f;
 
     public enum ShatterType
     {
@@ -167,6 +168,8 @@ public class Explodable : MonoBehaviour
                 {
                     fragments[i].AddComponent<DestroyObjectDelay>().delay = fragmentLifetime;
                 }
+
+                fragments[i].GetComponent<Rigidbody2D>().gravityScale = fragmentsGravityScale;
             }
         }
 

@@ -23,6 +23,7 @@ public class ExplodableEditor : Editor
         myTarget.sortingLayerName = EditorGUILayout.TextField("Sorting Layer", myTarget.sortingLayerName);
         myTarget.orderInLayer = EditorGUILayout.IntField("Order In Layer", myTarget.orderInLayer);
         myTarget.fragmentLifetime = EditorGUILayout.FloatField("Fragment Lifetime (0=infinite)", myTarget.fragmentLifetime);
+        myTarget.fragmentsGravityScale = EditorGUILayout.FloatField("Fragments' Gravity Scale", myTarget.fragmentsGravityScale);
 
         if (myTarget.GetComponent<PolygonCollider2D>() == null && myTarget.GetComponent<BoxCollider2D>() == null && myTarget.GetComponent<CircleCollider2D>() == null)
         {
