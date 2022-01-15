@@ -13,15 +13,17 @@ public class ExplosionForce : MonoBehaviour {
     /// </summary>
     /// <param name="position">location of the explosion</param>
 	public void doExplosion(Vector3 position){
+        position.z = 0f; // 2D only - Z should always be 0.
 		transform.localPosition = position;
-		StartCoroutine(waitAndExplode());
+        explodeNearbyRigidBodies();
+        Destroy(this.gameObject);
 	}
 
     /// <summary>
     /// exerts an explosion force on all rigidbodies within the given radius
     /// </summary>
     /// <returns></returns>
-	private IEnumerator waitAndExplode(){
+	private void explodeNearbyRigidBodies(){
 		Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position,radius);
      
 		foreach(Collider2D coll in colliders){
@@ -29,8 +31,6 @@ public class ExplosionForce : MonoBehaviour {
                 AddExplosionForce(coll.GetComponent<Rigidbody2D>(), force, transform.position, radius, upliftModifer);
 			}
 		}
-
-        yield return null;
 	}
 
     /// <summary>
@@ -56,6 +56,10 @@ public class ExplosionForce : MonoBehaviour {
             upliftForce.z = 0;
             body.AddForce(upliftForce);
         }
-		
-	}
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawWireSphere(transform.position, 0.3f);
+    }
 }

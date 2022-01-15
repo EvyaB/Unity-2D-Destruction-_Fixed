@@ -5,6 +5,7 @@ using System.Collections;
 public class ExplodeOnClick : MonoBehaviour {
 
 	private Explodable _explodable;
+	[SerializeField] ExplosionForce explosionForcePrefab;
 
 	void Start()
 	{
@@ -13,7 +14,9 @@ public class ExplodeOnClick : MonoBehaviour {
 	void OnMouseDown()
 	{
 		_explodable.explode();
-		ExplosionForce ef = GameObject.FindObjectOfType<ExplosionForce>();
-		ef.doExplosion(transform.position);
+
+		Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition); pos.z = 0f;
+		ExplosionForce ef = Instantiate(explosionForcePrefab, pos, Quaternion.identity);
+		ef.doExplosion(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 	}
 }
