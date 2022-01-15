@@ -28,6 +28,7 @@ public static class SpriteExploder
         //get collider information
         PolygonCollider2D sourcePolyCollider = source.GetComponent<PolygonCollider2D>();
         BoxCollider2D sourceBoxCollider = source.GetComponent<BoxCollider2D>();
+        CircleCollider2D sourceCircleCollider = source.GetComponent<CircleCollider2D>();
         List<Vector2> points = new List<Vector2>();
         List<Vector2> borderPoints = new List<Vector2>();
 
@@ -41,6 +42,11 @@ public static class SpriteExploder
         {
             points = getPoints(sourceBoxCollider);
             borderPoints = getPoints(sourceBoxCollider);
+        }
+        else if (sourceCircleCollider != null)
+        {
+            points = getPoints(sourceCircleCollider);
+            borderPoints = getPoints(sourceCircleCollider);
         }
 
         //create a bounding rectangle based on the polygon points
@@ -183,6 +189,7 @@ public static class SpriteExploder
         //get collider information
         PolygonCollider2D sourcePolyCollider = source.GetComponent<PolygonCollider2D>();
         BoxCollider2D sourceBoxCollider = source.GetComponent<BoxCollider2D>();
+        CircleCollider2D sourceCircleCollider = source.GetComponent<CircleCollider2D>();
         List<Vector2> points = new List<Vector2>();
         List<Vector2> borderPoints = new List<Vector2>();
         if (sourcePolyCollider != null)
@@ -194,6 +201,11 @@ public static class SpriteExploder
         {
             points = getPoints(sourceBoxCollider);
             borderPoints = getPoints(sourceBoxCollider);
+        }
+        else if (sourceCircleCollider != null)
+        {
+            points = getPoints(sourceCircleCollider);
+            borderPoints = getPoints(sourceCircleCollider);
         }
 
         Rect rect = getRect(source);
@@ -314,6 +326,27 @@ public static class SpriteExploder
 
         Vector2 center = collider.offset;
         Vector2 size = collider.size;
+        //bottom left
+        points.Add(new Vector2((center.x - size.x / 2), (center.y - size.y / 2)));
+        //top left
+        points.Add(new Vector2((center.x - size.x / 2), (center.y + size.y / 2)));
+        //top right
+        points.Add(new Vector2((center.x + size.x / 2), (center.y + size.y / 2)));
+        //bottom right
+        points.Add(new Vector2((center.x + size.x / 2), (center.y - size.y / 2)));
+
+        return points;
+    }
+    /// generates a list of points from a circle collider
+    /// </summary>
+    /// <param name="collider">source circle collider</param>
+    /// <returns>list of points</returns>
+    private static List<Vector2> getPoints(CircleCollider2D collider)
+    {
+        List<Vector2> points = new List<Vector2>();
+
+        Vector2 center = collider.offset;
+        Vector2 size = new Vector2(collider.radius * 2, collider.radius * 2);
         //bottom left
         points.Add(new Vector2((center.x - size.x / 2), (center.y - size.y / 2)));
         //top left

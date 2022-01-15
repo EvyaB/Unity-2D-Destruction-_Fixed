@@ -24,9 +24,9 @@ public class ExplodableEditor : Editor
         myTarget.orderInLayer = EditorGUILayout.IntField("Order In Layer", myTarget.orderInLayer);
         myTarget.fragmentLifetime = EditorGUILayout.FloatField("Fragment Lifetime (0=infinite)", myTarget.fragmentLifetime);
 
-        if (myTarget.GetComponent<PolygonCollider2D>() == null && myTarget.GetComponent<BoxCollider2D>() == null)
+        if (myTarget.GetComponent<PolygonCollider2D>() == null && myTarget.GetComponent<BoxCollider2D>() == null && myTarget.GetComponent<CircleCollider2D>() == null)
         {
-            EditorGUILayout.HelpBox("You must add a BoxCollider2D or PolygonCollider2D to explode this sprite", MessageType.Warning);
+            EditorGUILayout.HelpBox("You must add a BoxCollider2D or CircleCollider2D or PolygonCollider2D to explode this sprite", MessageType.Warning);
         }
         else
         {
