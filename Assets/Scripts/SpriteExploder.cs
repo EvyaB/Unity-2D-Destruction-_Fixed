@@ -54,7 +54,7 @@ public static class SpriteExploder
 
         for (int i = 0; i < extraPoints; i++)
         {
-            points.Add(new Vector2(Random.Range(rect.width / -2, rect.width / 2), Random.Range(rect.height / -2, rect.height / 2)));
+            points.Add(new Vector2(Random.Range(rect.width / -2, rect.width / 2), Random.Range(rect.height / -2 + rect.center.y, rect.height / 2 + rect.center.y)));
         }
 
 
@@ -119,9 +119,9 @@ public static class SpriteExploder
         vertices[0] = new Vector3(tri[0].x, tri[0].y, 0);
         vertices[1] = new Vector3(tri[1].x, tri[1].y, 0);
         vertices[2] = new Vector3(tri[2].x, tri[2].y, 0);
-        triangles[0] = 0;
+        triangles[0] = 2;
         triangles[1] = 1;
-        triangles[2] = 2;
+        triangles[2] = 0;
 
         uMesh.vertices = vertices;
         uMesh.triangles = triangles;
@@ -141,6 +141,7 @@ public static class SpriteExploder
         Vector3 diff = calcPivotCenterDiff(piece);
         centerMeshPivot(piece, diff);
         uMesh.RecalculateBounds();
+        uMesh.RecalculateNormals();
 
         //setFragmentMaterial(piece, source);
         piece.GetComponent<MeshRenderer>().sharedMaterial = mat;
@@ -199,7 +200,10 @@ public static class SpriteExploder
 
         for (int i = 0; i < extraPoints; i++)
         {
-            points.Add(new Vector2(Random.Range(rect.width / -2, rect.width / 2), Random.Range(rect.height / -2, rect.height / 2)));
+            points.Add(new Vector2(Random.Range(
+                rect.width / -2 + rect.center.x, rect.width / 2 + rect.center.x),
+                Random.Range(rect.height / -2 + rect.center.y, rect.height / 2 + rect.center.y)
+                ));
         }
 
 
@@ -356,8 +360,9 @@ public static class SpriteExploder
     private static Rect getRect(GameObject source)
     {
         Bounds bounds = source.GetComponent<Renderer>().bounds;
-        //return new Rect(source.transform.localPosition - bounds.extents, bounds.size);
-        return new Rect(bounds.extents.x * -1, bounds.extents.y * -1, bounds.size.x, bounds.size.y);
+        Rect rect = new Rect(bounds.extents.x * -1, bounds.extents.y * -1, bounds.size.x, bounds.size.y);
+        rect.center = new Vector2(rect.center.x + bounds.center.x - source.transform.position.x, rect.center.y + bounds.center.y - source.transform.position.y);
+        return rect;
     }
     private static Rect getRect(List<Vector2> region)
     {
@@ -562,7 +567,7 @@ public static class SpriteExploder
     /// <param name="source">original gameobject that was shattered</param>
     private static void setFragmentMaterial(GameObject newSprite, GameObject source)
     {
-        Material mat = new Material(Shader.Find("Sprites/Default"));
+        Material mat = new Material(source.GetComponent<Renderer>().sharedMaterial);
 
         SpriteRenderer sRend = source.GetComponent<SpriteRenderer>();
         if (sRend != null)
@@ -581,7 +586,7 @@ public static class SpriteExploder
         SpriteRenderer sRend = source.GetComponent<SpriteRenderer>();
         if (sRend != null)
         {
-            Material mat = new Material(Shader.Find("Sprites/Default"));
+            Material mat = new Material(sRend.sharedMaterial);
             mat.SetTexture("_MainTex", sRend.sprite.texture);
             mat.color = sRend.color;
             return mat;
