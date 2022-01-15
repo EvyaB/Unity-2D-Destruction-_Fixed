@@ -16,6 +16,7 @@ public class Explodable : MonoBehaviour
     public string fragmentLayer = "Default";
     public string sortingLayerName = "Default";
     public int orderInLayer = 0;
+    public float fragmentLifetime = 0;
 
     public enum ShatterType
     {
@@ -37,7 +38,7 @@ public class Explodable : MonoBehaviour
         {
             generateFragments();
         }
-        //otherwise unparent and activate them
+        //otherwise activate existing fragments
         else
         {
             foreach (GameObject frag in fragments)
@@ -50,6 +51,12 @@ public class Explodable : MonoBehaviour
                     mRend.sharedMaterial.SetTexture("_MainTex", sRend.sprite.texture);
                 }
                 frag.SetActive(true);
+
+                // if lifetime set - add DestroyObjectDelay component to destroy pieces with delay
+                if (fragmentLifetime > 0)
+                {
+                    frag.AddComponent<DestroyObjectDelay>().delay = fragmentLifetime;
+                }
             }
         }
         //if fragments exist destroy the original
