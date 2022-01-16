@@ -18,6 +18,7 @@ public class Explodable : MonoBehaviour
     public int orderInLayer = 0;
     public float fragmentLifetime = 0;
     public float fragmentsGravityScale = 1f;
+    public SpriteRenderer spriteRenderer;
 
     public enum ShatterType
     {
@@ -29,11 +30,18 @@ public class Explodable : MonoBehaviour
     public List<GameObject> fragments = new List<GameObject>();
     private List<List<Vector2>> polygons = new List<List<Vector2>>();
 
+    private void Reset()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
     /// <summary>
     /// Creates fragments if necessary and destroys original gameobject
     /// </summary>
     public void explode()
     {
+        if (spriteRenderer == null) { Debug.LogError(name + " Explodable object has no SpriteRenderer defined, cannot explode"); return; }
+
         //if fragments were not created before runtime then create them now
         if (fragments.Count == 0 && allowRuntimeFragmentation)
         {
@@ -47,7 +55,7 @@ public class Explodable : MonoBehaviour
                 var mRend = frag.GetComponent<MeshRenderer>();
                 if (mRend.sharedMaterial == null)
                 {
-                    var sRend = GetComponent<SpriteRenderer>();
+                    var sRend = spriteRenderer;
                     mRend.sharedMaterial = sRend.sharedMaterial;
                     mRend.sharedMaterial.SetTexture("_MainTex", sRend.sprite.texture);
                 }
@@ -57,7 +65,7 @@ public class Explodable : MonoBehaviour
         //if fragments exist destroy the original
         if (fragments.Count > 0)
         {
-            var renderer = gameObject.GetComponent<SpriteRenderer>();
+            var renderer = spriteRenderer;
             var colider = gameObject.GetComponent<Collider2D>();
 
             Destroy(renderer);
@@ -124,7 +132,7 @@ public class Explodable : MonoBehaviour
         Material mat = null;
         if (meshSaved)
         {
-            mat = SpriteExploder.createFragmentMaterial(gameObject);
+            mat = SpriteExploder.createFragmentMaterial(spriteRenderer);
             Directory.CreateDirectory("Assets/FragmentMaterials");
             AssetDatabase.CreateAsset(mat, "Assets/FragmentMaterials/" + transform.name + "_fragments" + ".mat");
         }
@@ -132,10 +140,10 @@ public class Explodable : MonoBehaviour
         switch (shatterType)
         {
             case ShatterType.Triangle:
-                fragments = SpriteExploder.GenerateTriangularPieces(gameObject, extraPoints, subshatterSteps, mat, meshSaved);
+                fragments = SpriteExploder.GenerateTriangularPieces(gameObject, spriteRenderer, extraPoints, subshatterSteps, mat, meshSaved);
                 break;
             case ShatterType.Voronoi:
-                fragments = SpriteExploder.GenerateVoronoiPieces(gameObject, extraPoints, subshatterSteps, mat, meshSaved);
+                fragments = SpriteExploder.GenerateVoronoiPieces(gameObject, spriteRenderer, extraPoints, subshatterSteps, mat, meshSaved);
                 break;
             default:
                 Debug.Log("invalid choice");

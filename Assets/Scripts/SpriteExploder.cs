@@ -7,13 +7,13 @@ using Delaunay.Geo;
 
 public static class SpriteExploder
 {
-    public static List<GameObject> GenerateTriangularPieces(GameObject source, int extraPoints = 0, int subshatterSteps = 0, Material mat = null, bool meshSaved = false)
+    public static List<GameObject> GenerateTriangularPieces(in GameObject source, in Renderer renderer, int extraPoints = 0, int subshatterSteps = 0, Material mat = null, bool meshSaved = false)
     {
         List<GameObject> pieces = new List<GameObject>();
 
         if (mat == null)
         {
-            mat = createFragmentMaterial(source);
+            mat = createFragmentMaterial(renderer);
         }
 
         //get transform information
@@ -50,7 +50,7 @@ public static class SpriteExploder
         }
 
         //create a bounding rectangle based on the polygon points
-        Rect rect = getRect(source);
+        Rect rect = getRect(renderer);
 
         //if the target polygon is a triangle, generate a point in the middle to allow for fracture
         if (points.Count == 3)
@@ -74,7 +74,7 @@ public static class SpriteExploder
 
             foreach (var triangle in clippedTriangles)
             {
-                pieces.Add(generateTriangularPiece(source, triangle, origVelocity, origScale, origRotation, mat));
+                pieces.Add(generateTriangularPiece(source, renderer, triangle, origVelocity, origScale, origRotation, mat));
             }
         }
         List<GameObject> morePieces = new List<GameObject>();
@@ -83,7 +83,7 @@ public static class SpriteExploder
             subshatterSteps--;
             foreach (GameObject piece in pieces)
             {
-                morePieces.AddRange(SpriteExploder.GenerateTriangularPieces(piece, extraPoints, subshatterSteps, mat));
+                morePieces.AddRange(SpriteExploder.GenerateTriangularPieces(piece, piece.GetComponent<Renderer>(), extraPoints, subshatterSteps, mat));
                 GameObject.DestroyImmediate(piece);
             }
         }
@@ -101,7 +101,7 @@ public static class SpriteExploder
 
         return morePieces;
     }
-    private static GameObject generateTriangularPiece(GameObject source, List<Vector2> tri, Vector2 origVelocity, Vector3 origScale, Quaternion origRotation, Material mat)
+    private static GameObject generateTriangularPiece(in GameObject source, in Renderer renderer, List<Vector2> tri, Vector2 origVelocity, Vector3 origScale, Quaternion origRotation, Material mat)
     {
         //Create Game Object and set transform settings properly
         GameObject piece = new GameObject(source.name + " piece");
@@ -131,14 +131,7 @@ public static class SpriteExploder
 
         uMesh.vertices = vertices;
         uMesh.triangles = triangles;
-        if (source.GetComponent<SpriteRenderer>() != null)
-        {
-            uMesh.uv = calcUV(vertices, source.GetComponent<SpriteRenderer>(), source.transform);
-        }
-        else
-        {
-            uMesh.uv = calcUV(vertices, source.GetComponent<MeshRenderer>(), source.transform);
-        }
+        uMesh.uv = calcUV(vertices, renderer, source.transform);
 
         //set transform properties before fixing the pivot for easier rotation
         piece.transform.localScale = origScale;
@@ -168,13 +161,13 @@ public static class SpriteExploder
         return piece;
     }
 
-    public static List<GameObject> GenerateVoronoiPieces(GameObject source, int extraPoints = 0, int subshatterSteps = 0, Material mat = null, bool meshSaved = false)
+    public static List<GameObject> GenerateVoronoiPieces(in GameObject source, in Renderer renderer, int extraPoints = 0, int subshatterSteps = 0, Material mat = null, bool meshSaved = false)
     {
         List<GameObject> pieces = new List<GameObject>();
 
         if (mat == null)
         {
-            mat = createFragmentMaterial(source);
+            mat = createFragmentMaterial(renderer);
         }
 
         //get transform information
@@ -208,7 +201,7 @@ public static class SpriteExploder
             borderPoints = getPoints(sourceCircleCollider);
         }
 
-        Rect rect = getRect(source);
+        Rect rect = getRect(renderer);
 
         for (int i = 0; i < extraPoints; i++)
         {
@@ -226,7 +219,7 @@ public static class SpriteExploder
             clippedRegions = ClipperHelper.clip(borderPoints, region);
             foreach (List<Vector2> clippedRegion in clippedRegions)
             {
-                pieces.Add(generateVoronoiPiece(source, clippedRegion, origVelocity, origScale, origRotation, mat));
+                pieces.Add(generateVoronoiPiece(source, renderer, clippedRegion, origVelocity, origScale, origRotation, mat));
             }
         }
 
@@ -236,7 +229,7 @@ public static class SpriteExploder
             subshatterSteps--;
             foreach (GameObject piece in pieces)
             {
-                morePieces.AddRange(SpriteExploder.GenerateVoronoiPieces(piece, extraPoints, subshatterSteps));
+                morePieces.AddRange(SpriteExploder.GenerateVoronoiPieces(piece, piece.GetComponent<Renderer>(), extraPoints, subshatterSteps));
                 GameObject.DestroyImmediate(piece);
             }
         }
@@ -253,7 +246,7 @@ public static class SpriteExploder
 
         return morePieces;
     }
-    private static GameObject generateVoronoiPiece(GameObject source, List<Vector2> region, Vector2 origVelocity, Vector3 origScale, Quaternion origRotation, Material mat)
+    private static GameObject generateVoronoiPiece(in GameObject source, in Renderer renderer, List<Vector2> region, Vector2 origVelocity, Vector3 origScale, Quaternion origRotation, Material mat)
     {
         //Create Game Object and set transform settings properly
         GameObject piece = new GameObject(source.name + " piece");
@@ -279,14 +272,7 @@ public static class SpriteExploder
 
         uMesh.vertices = vertices;
         uMesh.triangles = triangles;
-        if (source.GetComponent<SpriteRenderer>() != null)
-        {
-            uMesh.uv = calcUV(vertices, source.GetComponent<SpriteRenderer>(), source.transform);
-        }
-        else
-        {
-            uMesh.uv = calcUV(vertices, source.GetComponent<MeshRenderer>(), source.transform);
-        }
+        uMesh.uv = calcUV(vertices, renderer, source.transform);
 
         //set transform properties before fixing the pivot for easier rotation
         piece.transform.localScale = origScale;
@@ -390,11 +376,11 @@ public static class SpriteExploder
     /// </summary>
     /// <param name="source">gameobject to get the rectangle from</param>
     /// <returns>a Rectangle representing the rendering bounds of the object</returns>
-    private static Rect getRect(GameObject source)
+    private static Rect getRect(in Renderer renderer)
     {
-        Bounds bounds = source.GetComponent<Renderer>().bounds;
+        Bounds bounds = renderer.bounds;
         Rect rect = new Rect(bounds.extents.x * -1, bounds.extents.y * -1, bounds.size.x, bounds.size.y);
-        rect.center = new Vector2(rect.center.x + bounds.center.x - source.transform.position.x, rect.center.y + bounds.center.y - source.transform.position.y);
+        rect.center = new Vector2(rect.center.x + bounds.center.x - renderer.transform.position.x, rect.center.y + bounds.center.y - renderer.transform.position.y);
         return rect;
     }
     private static Rect getRect(List<Vector2> region)
@@ -436,38 +422,14 @@ public static class SpriteExploder
     /// <param name="sRend">Sprite Renderer of original object</param>
     /// <param name="sTransform">Transform of the original object</param>
     /// <returns>array of UV coordinates for the mesh</returns>
-    private static Vector2[] calcUV(Vector3[] vertices, SpriteRenderer sRend, Transform sTransform)
+    private static Vector2[] calcUV(Vector3[] vertices, in Renderer renderer, Transform sTransform)
     {
-        float texHeight = (sRend.bounds.extents.y * 2) / sTransform.localScale.y;
-        float texWidth = (sRend.bounds.extents.x * 2) / sTransform.localScale.x;
-        Vector3 botLeft = sTransform.InverseTransformPoint(new Vector3(sRend.bounds.center.x - sRend.bounds.extents.x, sRend.bounds.center.y - sRend.bounds.extents.y, 0));
+        float texHeight = (renderer.bounds.extents.y * 2) / sTransform.localScale.y;
+        float texWidth = (renderer.bounds.extents.x * 2) / sTransform.localScale.x;
+        Vector3 botLeft = sTransform.InverseTransformPoint(new Vector3(renderer.bounds.center.x - renderer.bounds.extents.x, renderer.bounds.center.y - renderer.bounds.extents.y, 0));
         Vector2[] uv = new Vector2[vertices.Length];
 
-        Vector2[] sourceUV = sRend.sprite.uv;
-        Vector2 uvMin;
-        Vector2 uvMax;
-        getUVRange(out uvMin, out uvMax, sourceUV);
-
-        for (int i = 0; i < vertices.Length; i++)
-        {
-
-            float x = (vertices[i].x - botLeft.x) / texWidth;
-            x = scaleRange(x, 0, 1, uvMin.x, uvMax.x);
-            float y = (vertices[i].y - botLeft.y) / texHeight;
-            y = scaleRange(y, 0, 1, uvMin.y, uvMax.y);
-
-            uv[i] = new Vector2(x, y);
-        }
-        return uv;
-    }
-    private static Vector2[] calcUV(Vector3[] vertices, MeshRenderer mRend, Transform sTransform)
-    {
-        float texHeight = (mRend.bounds.extents.y * 2) / sTransform.localScale.y;
-        float texWidth = (mRend.bounds.extents.x * 2) / sTransform.localScale.x;
-        Vector3 botLeft = sTransform.InverseTransformPoint(new Vector3(mRend.bounds.center.x - mRend.bounds.extents.x, mRend.bounds.center.y - mRend.bounds.extents.y, 0));
-        Vector2[] uv = new Vector2[vertices.Length];
-
-        Vector2[] sourceUV = sTransform.GetComponent<MeshFilter>().sharedMesh.uv;
+        Vector2[] sourceUV = (renderer is SpriteRenderer) ? (renderer as SpriteRenderer).sprite.uv : sTransform.GetComponent<MeshFilter>().sharedMesh.uv;
         Vector2 uvMin;
         Vector2 uvMax;
         getUVRange(out uvMin, out uvMax, sourceUV);
@@ -614,8 +576,11 @@ public static class SpriteExploder
         }
         newSprite.GetComponent<MeshRenderer>().sharedMaterial = mat;
     }
-    public static Material createFragmentMaterial(GameObject source)
+
+    // Create a material according to a source renderer. source can be a MeshRenderer or a SpriteRenderer
+    public static Material createFragmentMaterial(in Renderer source)
     {
+        // Determine type of renderer and copy its properites accordingly
         SpriteRenderer sRend = source.GetComponent<SpriteRenderer>();
         if (sRend != null)
         {

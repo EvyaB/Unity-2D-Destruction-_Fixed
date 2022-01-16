@@ -6,7 +6,6 @@ using UnityEditor;
 [CustomEditor(typeof(Explodable))]
 public class ExplodableEditor : Editor
 {
-
     public override void OnInspectorGUI()
     {
         Explodable myTarget = (Explodable)target;
@@ -24,6 +23,7 @@ public class ExplodableEditor : Editor
         myTarget.orderInLayer = EditorGUILayout.IntField("Order In Layer", myTarget.orderInLayer);
         myTarget.fragmentLifetime = EditorGUILayout.FloatField("Fragment Lifetime (0=infinite)", myTarget.fragmentLifetime);
         myTarget.fragmentsGravityScale = EditorGUILayout.FloatField("Fragments' Gravity Scale", myTarget.fragmentsGravityScale);
+        myTarget.spriteRenderer = (SpriteRenderer)EditorGUILayout.ObjectField("Renderer to Fragment", myTarget.spriteRenderer, typeof(SpriteRenderer), true);
 
         if (myTarget.GetComponent<PolygonCollider2D>() == null && myTarget.GetComponent<BoxCollider2D>() == null && myTarget.GetComponent<CircleCollider2D>() == null)
         {
@@ -46,8 +46,6 @@ public class ExplodableEditor : Editor
                 myTarget.deleteFragments();
                 EditorUtility.SetDirty(myTarget);
             }
-
         }
-
     }
 }

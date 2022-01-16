@@ -15,8 +15,15 @@ public class ExplodeOnClick : MonoBehaviour {
 	{
 		_explodable.explode();
 
-		Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition); pos.z = 0f;
-		ExplosionForce ef = Instantiate(explosionForcePrefab, pos, Quaternion.identity);
-		ef.doExplosion(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+		if (explosionForcePrefab != null)
+		{
+			Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition); pos.z = 0f;
+			ExplosionForce ef = Instantiate(explosionForcePrefab, pos, Quaternion.identity);
+			ef.doExplosion(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+		}
+		else
+        {
+			Debug.LogError("ExplodeOnClick for " + name + " has no ExplosionForce prefab. Doing nothing");
+        }
 	}
 }
