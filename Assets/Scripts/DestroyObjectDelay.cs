@@ -2,32 +2,29 @@
 using System.Collections;
 
 // Copied from commit by 'carohauta' on the original version of Unity-2D-Destruction
+[RequireComponent(typeof(Renderer))]
 public class DestroyObjectDelay : MonoBehaviour
 {
     public float delay = 1;
 
-    private bool fading = false;
+    private float initialAlpha;
+    private float timeSinceStart;
 
     private void Start()
     {
+        initialAlpha = GetComponent<Renderer>().material.color.a;
+        timeSinceStart = 0f;
+
         Invoke("DestroyObject", delay);
-        Invoke("SetFadeTrue", delay - 1);
     }
 
     private void Update()
     {
-        if (fading)
-        {
-            var material = GetComponent<Renderer>().material;
-            var color = material.color;
+        var material = GetComponent<Renderer>().material;
+        var color = material.color;
 
-            material.color = new Color(color.r, color.g, color.b, color.a - (delay / 5 * Time.deltaTime));
-        }
-    }
-
-    private void SetFadeTrue()
-    {
-        fading = true;
+        timeSinceStart += Time.deltaTime;
+        material.color = new Color(color.r, color.g, color.b, Mathf.Lerp(initialAlpha, 0f, (timeSinceStart / delay)));
     }
 
     private void DestroyObject()
